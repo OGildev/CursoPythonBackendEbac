@@ -12,8 +12,6 @@ import math
 
 numero = int(input("Digite um número: "))
 
-# Matematicamente, a raiz quadrada de um número é o mesmo que elevá-lo a 1/2, ou seja, 0.5
-
 resultado = math.sqrt(numero)
 
 print("A raiz quadrada de", numero, "é:", resultado)
