@@ -15,6 +15,8 @@
 # Update
 # Delete
 
+# Comando para inicializar servidor: fastapi dev .\Aula1.py
+
 from fastapi import FastAPI, HTTPException # type: ignore
 
 app = FastAPI()
@@ -48,11 +50,11 @@ def put_livros(id_livro: int, nome_livro: str, autor_livro: str, ano_livro: int)
         raise HTTPException(status_code=404, detail="Esse livro não foi encontrado!")
     else:
         if nome_livro:
-            livros["nome_livro"] = nome_livro
+            livro["nome_livro"] = nome_livro
         if autor_livro: 
-            livros["autor_livro"] = autor_livro
+            livro["autor_livro"] = autor_livro
         if ano_livro:
-            livros["ano_livro"] = ano_livro
+            livro["ano_livro"] = ano_livro
 
         return {"message": "As informações do seu livro foram atualizados com sucesso!"}
     
