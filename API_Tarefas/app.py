@@ -23,7 +23,7 @@ def post_tarefas(nome: str, descricao: str):
         if tarefa["nome"] == nome:
             raise HTTPException(status_code = 400, detail = "Essa tarefa já existe!")
         
-    nova_tarefa = {"nome": nome, "descricao": descricao}    
+    nova_tarefa = {"nome": nome, "descricao": descricao, "concluida": False}    
     tarefas.append(nova_tarefa)
 
     return{"message": "A tarefa foi adicionada com sucesso!"}
