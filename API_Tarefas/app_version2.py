@@ -2,7 +2,6 @@
 
 from fastapi import FastAPI, HTTPException, Depends # type: ignore
 from fastapi.security import HTTPBasic, HTTPBasicCredentials # type: ignore
-from fastapi import FastAPI, HTTPException  # type: ignore
 from pydantic import BaseModel # type: ignore
 import secrets
 import os
@@ -46,9 +45,9 @@ tarefas = [
 ]
 
 @app.get("/tarefas")
-def get_tarefas(page: int = 1, limit: int = 10, escolha: int = 0, credentials: HTTPBasicCredentials = Depends(autenticacao)):
-    if page < 1 or limit < 1:
-        raise HTTPException(status_code=422, detail="Page e limit inválidos! Os valores devem ser maiores que 0.")
+def get_tarefas(page: int = 1, size: int = 10, escolha: int = 0, credentials: HTTPBasicCredentials = Depends(autenticacao)):
+    if page < 1 or size < 1:
+        raise HTTPException(status_code=422, detail="Page e size inválidos! Os valores devem ser maiores que 0.")
     
     if not tarefas:
         return {"message": "Não existe essa tarefa."}
@@ -62,8 +61,8 @@ def get_tarefas(page: int = 1, limit: int = 10, escolha: int = 0, credentials: H
     else:
         tarefas_ordenadas = tarefas
 
-    start = (page - 1) * limit
-    end = start + limit
+    start = (page - 1) * size
+    end = start + size
 
     tarefas_paginadas = [
         {
@@ -77,7 +76,7 @@ def get_tarefas(page: int = 1, limit: int = 10, escolha: int = 0, credentials: H
 
     return {
         "page": page,
-        "limit": limit,
+        "size": size,
         "total_tarefas": len(tarefas),
         "tarefas": tarefas_paginadas
     }
