@@ -36,21 +36,52 @@ def autenticacao(credentials: HTTPBasicCredentials = Depends(security)):
 class Tarefa(BaseModel):
     nome: str
     descricao: str
-    concluida: bool
+    concluida: bool = False
+    ordem: int = 0
 
 tarefas = [
-    Tarefa(nome="Tarefa 1", descricao="Lavar louça", concluida=False),
-    Tarefa(nome="Tarefa 2", descricao="Estudar Python", concluida=False),
-    Tarefa(nome="Tarefa 3", descricao="2hrs de games para curtição", concluida=False)
+    Tarefa(nome="Tarefa 1", descricao="Lavar louça", concluida=False, ordem=3),
+    Tarefa(nome="Tarefa 2", descricao="Estudar Python", concluida=False, ordem=2),
+    Tarefa(nome="Tarefa 3", descricao="2hrs de games para curtição", concluida=False, ordem=1),
 ]
 
 @app.get("/tarefas")
-def get_tarefas(credentials: HTTPBasicCredentials = Depends(autenticacao)):
+def get_tarefas(page: int = 1, limit: int = 10, escolha: int = 0, credentials: HTTPBasicCredentials = Depends(autenticacao)):
+    if page < 1 or limit < 1:
+        raise HTTPException(status_code=304, detail="Page e limit inválidos! Os valores devem ser maiores que 0.")
+    
     if not tarefas:
         return {"message": "Não existe essa tarefa."}
-    else:
-        return {"tarefas": tarefas}
     
+    if escolha == 1:
+        tarefas_ordenadas = sorted(tarefas, key=lambda t: t.ordem)
+    elif escolha == 2:
+        tarefas_ordenadas = sorted(tarefas, key=lambda t: t.nome)
+    elif escolha == 3:
+        tarefas_ordenadas = sorted(tarefas, key=lambda t: t.descricao)
+    else:
+        tarefas_ordenadas = tarefas
+
+    start = (page - 1) * limit
+    end = start + limit
+
+    tarefas_paginadas = [
+        {
+            "nome": tarefa.nome,
+            "descricao": tarefa.descricao,
+            "concluida": tarefa.concluida,
+            "ordem": tarefa.ordem
+        }
+        for tarefa in tarefas_ordenadas[start:end]
+    ]
+
+    return {
+        "page": page,
+        "limit": limit,
+        "total_tarefas": len(tarefas),
+        "tarefas": tarefas_paginadas
+    }
+
 @app.post("/adicionar")
 def post_tarefas(tarefa: Tarefa, credentials: HTTPBasicCredentials = Depends(autenticacao)):
     for t in tarefas:
