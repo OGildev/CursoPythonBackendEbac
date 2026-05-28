@@ -48,7 +48,7 @@ tarefas = [
 @app.get("/tarefas")
 def get_tarefas(page: int = 1, limit: int = 10, escolha: int = 0, credentials: HTTPBasicCredentials = Depends(autenticacao)):
     if page < 1 or limit < 1:
-        raise HTTPException(status_code=304, detail="Page e limit inválidos! Os valores devem ser maiores que 0.")
+        raise HTTPException(status_code=422, detail="Page e limit inválidos! Os valores devem ser maiores que 0.")
     
     if not tarefas:
         return {"message": "Não existe essa tarefa."}
@@ -86,7 +86,7 @@ def get_tarefas(page: int = 1, limit: int = 10, escolha: int = 0, credentials: H
 def post_tarefas(tarefa: Tarefa, credentials: HTTPBasicCredentials = Depends(autenticacao)):
     for t in tarefas:
         if t.nome == tarefa.nome:
-            raise HTTPException(status_code = 400, detail = "Essa tarefa já existe!")
+            raise HTTPException(status_code = 409, detail = "Essa tarefa já existe!")
         
     tarefas.append(tarefa)
 
@@ -99,7 +99,7 @@ def put_tarefa(nome: str, credentials: HTTPBasicCredentials = Depends(autenticac
             t.concluida = True
             return {"message": "A tarefa foi alterada com sucesso!"}
         
-    raise HTTPException(status_code = 400, detail = "Essa tarefa não existe para ser atualizada!")    
+    raise HTTPException(status_code = 404, detail = "Essa tarefa não existe para ser atualizada!")    
 
 @app.delete("/deletar/{nome}")
 def delete_tarefa(nome: str, credentials: HTTPBasicCredentials = Depends(autenticacao)):
